@@ -1,25 +1,23 @@
-const express = require('express')
-
-const fs = require('fs')
-
+const express=require('express')
+const app =express()
 const { exec } = require('child_process')
 
-const path = require('path')
+const multer =require('multer')
 
-const multer = require('multer')
+const fs=require('fs')
+
+const path=require('path')
 
 const bodyParser = require('body-parser')
+app.use(express.static('public'))
+var dir ='public'
+var subDirectory='public/uploads'
 
-const app = express()
-
-var dir = 'public';
-var subDirectory = 'public/uploads'
-
-if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
+if(!fs.existsSync(dir))
+{
+    fs.mkdirSync(dir)
 
     fs.mkdirSync(subDirectory)
-
 }
 
 var storage = multer.diskStorage({
@@ -37,10 +35,10 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(express.static('public'))
 
-const PORT = process.env.PORT || 3000
 
-app.get('/',(req,res) => {
-    res.sendFile(__dirname +'/index.html')
+const PORT =process.env.PORT ||5000
+app.get('/',(req,res)=>{
+    res.sendFile(__dirname+"/index.html")
 })
 
 app.post('/convert',upload.single('file'),(req,res,next) => {
@@ -59,6 +57,8 @@ app.post('/convert',upload.single('file'),(req,res,next) => {
             res.download(output,(err) => {
                 if(err) throw err
                 
+                /* below  these 2 lines automatically delete
+                the upload and converted file also */
                 fs.unlinkSync(req.file.path)
                 fs.unlinkSync(output)
 
@@ -69,7 +69,6 @@ app.post('/convert',upload.single('file'),(req,res,next) => {
         })
     }
 })
-
-app.listen(PORT,() => {
-    console.log(`App is listening on Port ${PORT}`)
+app.listen(PORT,()=>{
+    console.log(`App is listening on ${PORT}`)
 })
